@@ -6,6 +6,16 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		C27DCBC72EE2540D007F5AD1 /* FloatingNotesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27DCBC62EE2540D007F5AD1 /* FloatingNotesApp.swift */; };
+		C27DCBF22EE255A1007F5AD1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27DCBF12EE255A1007F5AD1 /* AppDelegate.swift */; };
+		C27DCBF42EE255AC007F5AD1 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27DCBF32EE255AC007F5AD1 /* Note.swift */; };
+		C27DCBF62EE255B8007F5AD1 /* NoteStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27DCBF52EE255B8007F5AD1 /* NoteStore.swift */; };
+		C27DCBF82EE255C3007F5AD1 /* StickyWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27DCBF72EE255C3007F5AD1 /* StickyWindowController.swift */; };
+		C27DCBFA2EE255CE007F5AD1 /* StickyNoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27DCBF92EE255CE007F5AD1 /* StickyNoteView.swift */; };
+		C27DCBFC2EE255D9007F5AD1 /* HotKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27DCBFB2EE255D9007F5AD1 /* HotKeyManager.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		C27DCBD12EE2540F007F5AD1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -25,8 +35,15 @@
 
 /* Begin PBXFileReference section */
 		C27DCBC32EE2540D007F5AD1 /* FloatingNotes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FloatingNotes.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C27DCBC62EE2540D007F5AD1 /* FloatingNotesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingNotesApp.swift; sourceTree = "<group>"; };
 		C27DCBD02EE2540F007F5AD1 /* FloatingNotesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FloatingNotesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C27DCBDA2EE2540F007F5AD1 /* FloatingNotesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FloatingNotesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C27DCBF12EE255A1007F5AD1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = SOURCE_ROOT; };
+		C27DCBF32EE255AC007F5AD1 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
+		C27DCBF52EE255B8007F5AD1 /* NoteStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteStore.swift; sourceTree = "<group>"; };
+		C27DCBF72EE255C3007F5AD1 /* StickyWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyWindowController.swift; sourceTree = "<group>"; };
+		C27DCBF92EE255CE007F5AD1 /* StickyNoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyNoteView.swift; sourceTree = "<group>"; };
+		C27DCBFB2EE255D9007F5AD1 /* HotKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeyManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +92,10 @@
 		C27DCBBA2EE2540D007F5AD1 = {
 			isa = PBXGroup;
 			children = (
+				C27DCBF02EE2555C007F5AD1 /* Hotkeys */,
+				C27DCBEF2EE25556007F5AD1 /* Windows */,
+				C27DCBEE2EE25549007F5AD1 /* Notes */,
+				C27DCBED2EE2553C007F5AD1 /* Application */,
 				C27DCBC52EE2540D007F5AD1 /* FloatingNotes */,
 				C27DCBD32EE2540F007F5AD1 /* FloatingNotesTests */,
 				C27DCBDD2EE2540F007F5AD1 /* FloatingNotesUITests */,
@@ -90,6 +111,41 @@
 				C27DCBDA2EE2540F007F5AD1 /* FloatingNotesUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		C27DCBED2EE2553C007F5AD1 /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				C27DCBC62EE2540D007F5AD1 /* FloatingNotesApp.swift */,
+				C27DCBF12EE255A1007F5AD1 /* AppDelegate.swift */,
+			);
+			path = Application;
+			sourceTree = "<group>";
+		};
+		C27DCBEE2EE25549007F5AD1 /* Notes */ = {
+			isa = PBXGroup;
+			children = (
+				C27DCBF32EE255AC007F5AD1 /* Note.swift */,
+				C27DCBF52EE255B8007F5AD1 /* NoteStore.swift */,
+			);
+			path = Notes;
+			sourceTree = "<group>";
+		};
+		C27DCBEF2EE25556007F5AD1 /* Windows */ = {
+			isa = PBXGroup;
+			children = (
+				C27DCBF72EE255C3007F5AD1 /* StickyWindowController.swift */,
+				C27DCBF92EE255CE007F5AD1 /* StickyNoteView.swift */,
+			);
+			path = Windows;
+			sourceTree = "<group>";
+		};
+		C27DCBF02EE2555C007F5AD1 /* Hotkeys */ = {
+			isa = PBXGroup;
+			children = (
+				C27DCBFB2EE255D9007F5AD1 /* HotKeyManager.swift */,
+			);
+			path = Hotkeys;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -236,6 +292,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C27DCBF22EE255A1007F5AD1 /* AppDelegate.swift in Sources */,
+				C27DCBFA2EE255CE007F5AD1 /* StickyNoteView.swift in Sources */,
+				C27DCBC72EE2540D007F5AD1 /* FloatingNotesApp.swift in Sources */,
+				C27DCBF62EE255B8007F5AD1 /* NoteStore.swift in Sources */,
+				C27DCBFC2EE255D9007F5AD1 /* HotKeyManager.swift in Sources */,
+				C27DCBF82EE255C3007F5AD1 /* StickyWindowController.swift in Sources */,
+				C27DCBF42EE255AC007F5AD1 /* Note.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -408,6 +471,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sathvikchowdary.FloatingNotes;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -440,6 +504,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sathvikchowdary.FloatingNotes;
 				PRODUCT_NAME = "$(TARGET_NAME)";

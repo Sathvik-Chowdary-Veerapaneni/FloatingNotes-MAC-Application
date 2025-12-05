@@ -24,15 +24,15 @@ struct StickyNoteView: View {
     // Callback to let the window controller update NSWindow.alphaValue
     let onOpacityChange: (Double) -> Void
     // Callback to toggle app linking
-    let onLinkAction: () -> Bool // Returns new state (isLinked)
+    let onLinkAction: () -> String? // Returns app name if linked, nil if not
 
-    @State private var isLinked: Bool = false
+    @State private var linkedAppName: String? = nil
 
     init(
         appearance: NoteAppearance,
         initialOpacity: Double = 1.0,
         onOpacityChange: @escaping (Double) -> Void = { _ in },
-        onLinkAction: @escaping () -> Bool = { false }
+        onLinkAction: @escaping () -> String? = { nil }
     ) {
         self.appearance = appearance
         _opacity = State(initialValue: initialOpacity)
@@ -84,14 +84,25 @@ struct StickyNoteView: View {
                             
                             // Link Button
                             Button(action: {
-                                isLinked = onLinkAction()
+                                linkedAppName = onLinkAction()
                             }) {
-                                Image(systemName: isLinked ? "link" : "link.badge.plus")
-                                    .font(.system(size: 11))
-                                    .foregroundColor(isLinked ? .black : .black.opacity(0.4))
+                                HStack(spacing: 2) {
+                                    Image(systemName: linkedAppName != nil ? "link" : "link.badge.plus")
+                                        .font(.system(size: 11))
+                                    
+                                    if let name = linkedAppName {
+                                        Text(name)
+                                            .font(.system(size: 9, weight: .bold))
+                                            .lineLimit(1)
+                                            .fixedSize()
+                                    }
+                                }
+                                .foregroundColor(linkedAppName != nil ? .black : .black.opacity(0.4))
+                                .padding(4)
+                                .contentShape(Rectangle())
                             }
                             .buttonStyle(.plain)
-                            .help(isLinked ? "Unlink from App" : "Link to Active App")
+                            .help(linkedAppName != nil ? "Unlink from \(linkedAppName!)" : "Link to Active App")
                         }
 
                         Spacer()

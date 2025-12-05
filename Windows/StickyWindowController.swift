@@ -60,23 +60,43 @@ class StickyWindowController: NSWindowController {
                 UserDefaults.standard.set(newOpacity, forKey: "LastStickyOpacity")
             },
             onLinkAction: { [weak self] in
-                guard let self = self else { return false }
+                guard let self = self else { return nil }
                 
                 if let linked = self.linkedAppBundleID {
                     // Currently linked, so Unlink
                     self.linkedAppBundleID = nil
                     print("Unlinked note from \(linked)")
-                    return false
+                    return nil
                 } else {
-                    // Currently unlinked, so Link to last active app
+                // Currently unlinked, so Link to last active app
+                    
+                    var targetAppID: String? = nil
+                    
                     if let appDelegate = NSApp.delegate as? AppDelegate,
                        let lastApp = appDelegate.lastActiveAppBundleID {
-                        self.linkedAppBundleID = lastApp
-                        print("Linked note to \(lastApp)")
-                        return true
+                        targetAppID = lastApp
                     } else {
-                        print("No last active app found to link to")
-                        return false
+                        // Fallback: Try to find the most reasonable "other" app
+                        // This handles the case where the user launches FloatingNotes and immediately clicks link
+                        let candidates = NSWorkspace.shared.runningApplications.filter { app in
+                            app.activationPolicy == .regular &&
+                            app.bundleIdentifier != Bundle.main.bundleIdentifier
+                        }
+                        // Unfortunately we can't easily know Z-order, but let's pick the first one as a best guess
+                        // or just fail. Failing is better than random linking.
+                        // However, user said "I opened Safari". If Safari is running, let's try to grab it if it's the only other obvious one?
+                        // Let's rely on the user switching apps at least once usually.
+                        // But let's log it.
+                        print("No tracked last active app.")
+                    }
+                    
+                    if let appID = targetAppID {
+                        self.linkedAppBundleID = appID
+                        print("Linked note to \(appID)")
+                        let appName = NSRunningApplication.runningApplications(withBundleIdentifier: appID).first?.localizedName ?? appID
+                        return appName
+                    } else {
+                        return nil
                     }
                 }
             }

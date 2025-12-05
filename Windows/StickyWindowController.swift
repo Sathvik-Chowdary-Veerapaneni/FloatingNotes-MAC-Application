@@ -3,12 +3,17 @@ import SwiftUI
 
 class StickyWindowController: NSWindowController {
 
-    convenience init(
-        frame: NSRect = NSRect(x: 300, y: 300, width: 300, height: 200)
-    ) {
+    private let appearance: NoteAppearance
 
-        // Create floating panel
-        let window = NSPanel(
+    convenience init(frame: NSRect = NSRect(x: 300, y: 300, width: 300, height: 200)) {
+        let appearance = NoteAppearance(color: .yellow)
+        self.init(frame: frame, appearance: appearance)
+    }
+
+    init(frame: NSRect, appearance: NoteAppearance) {
+        self.appearance = appearance
+
+        let panel = NSPanel(
             contentRect: frame,
             styleMask: [
                 .titled,
@@ -20,30 +25,36 @@ class StickyWindowController: NSWindowController {
             defer: false
         )
 
-        window.titleVisibility = .hidden
-        window.titlebarAppearsTransparent = true
-        window.isMovableByWindowBackground = true
-
-        // Float over all apps + all Spaces + fullscreen apps
-        window.level = .floating
-        window.collectionBehavior = [
+        // --- CRITICAL FOR FULLSCREEN OVERLAY ---
+        panel.hidesOnDeactivate = false                 // <-- keep visible when Safari is active
+        panel.isFloatingPanel = true
+        panel.level = .statusBar                       // stronger than .floating, still reasonable
+        panel.collectionBehavior = [
             .canJoinAllSpaces,
             .fullScreenAuxiliary
         ]
+        // --------------------------------------
 
-        window.isReleasedWhenClosed = false
+        panel.titleVisibility = .hidden
+        panel.titlebarAppearsTransparent = true
+        panel.isMovableByWindowBackground = true
+        panel.isReleasedWhenClosed = false
 
-        // SwiftUI content with callback to control window alpha
         let rootView = StickyNoteView(
-            initialColor: .yellow,
-            initialOpacity: Double(window.alphaValue)
+            appearance: appearance,
+            initialOpacity: Double(panel.alphaValue)
         ) { newOpacity in
-            window.alphaValue = CGFloat(newOpacity)
+            panel.alphaValue = CGFloat(newOpacity)
         }
 
-        let hostingController = NSHostingController(rootView: rootView)
-        window.contentView = hostingController.view
+        panel.contentView = NSHostingController(rootView: rootView).view
 
-        self.init(window: window)
+        super.init(window: panel)
+    }
+
+    required init?(coder: NSCoder) { nil }
+
+    func setColor(_ color: Color) {
+        appearance.color = color
     }
 }

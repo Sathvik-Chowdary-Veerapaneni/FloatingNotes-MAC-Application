@@ -3,11 +3,9 @@ import SwiftUI
 
 class StickyWindowController: NSWindowController {
 
-    convenience init(frame: NSRect = NSRect(x: 300, y: 300, width: 300, height: 200)) {
-
-        // Create SwiftUI view
-        let rootView = StickyNoteView()
-        let hostingController = NSHostingController(rootView: rootView)
+    convenience init(
+        frame: NSRect = NSRect(x: 300, y: 300, width: 300, height: 200)
+    ) {
 
         // Create floating panel
         let window = NSPanel(
@@ -26,7 +24,7 @@ class StickyWindowController: NSWindowController {
         window.titlebarAppearsTransparent = true
         window.isMovableByWindowBackground = true
 
-        // Make it float over all apps + all Spaces + fullscreen apps
+        // Float over all apps + all Spaces + fullscreen apps
         window.level = .floating
         window.collectionBehavior = [
             .canJoinAllSpaces,
@@ -34,6 +32,16 @@ class StickyWindowController: NSWindowController {
         ]
 
         window.isReleasedWhenClosed = false
+
+        // SwiftUI content with callback to control window alpha
+        let rootView = StickyNoteView(
+            initialColor: .yellow,
+            initialOpacity: Double(window.alphaValue)
+        ) { newOpacity in
+            window.alphaValue = CGFloat(newOpacity)
+        }
+
+        let hostingController = NSHostingController(rootView: rootView)
         window.contentView = hostingController.view
 
         self.init(window: window)

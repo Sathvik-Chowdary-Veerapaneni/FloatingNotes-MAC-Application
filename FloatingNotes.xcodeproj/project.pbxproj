@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C21B2F1F2EE346B8005FB28A /* MacEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C21B2F1E2EE346B8005FB28A /* MacEditorView.swift */; };
 		C27DCBC72EE2540D007F5AD1 /* FloatingNotesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27DCBC62EE2540D007F5AD1 /* FloatingNotesApp.swift */; };
 		C27DCBF22EE255A1007F5AD1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27DCBF12EE255A1007F5AD1 /* AppDelegate.swift */; };
 		C27DCBF42EE255AC007F5AD1 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27DCBF32EE255AC007F5AD1 /* Note.swift */; };
@@ -34,6 +35,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C21B2F1E2EE346B8005FB28A /* MacEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacEditorView.swift; sourceTree = "<group>"; };
 		C27DCBC32EE2540D007F5AD1 /* FloatingNotes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FloatingNotes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C27DCBC62EE2540D007F5AD1 /* FloatingNotesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingNotesApp.swift; sourceTree = "<group>"; };
 		C27DCBD02EE2540F007F5AD1 /* FloatingNotesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FloatingNotesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -136,6 +138,7 @@
 			children = (
 				C27DCBF72EE255C3007F5AD1 /* StickyWindowController.swift */,
 				C27DCBF92EE255CE007F5AD1 /* StickyNoteView.swift */,
+				C21B2F1E2EE346B8005FB28A /* MacEditorView.swift */,
 			);
 			path = Windows;
 			sourceTree = "<group>";
@@ -293,6 +296,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C27DCBF22EE255A1007F5AD1 /* AppDelegate.swift in Sources */,
+				C21B2F1F2EE346B8005FB28A /* MacEditorView.swift in Sources */,
 				C27DCBFA2EE255CE007F5AD1 /* StickyNoteView.swift in Sources */,
 				C27DCBC72EE2540D007F5AD1 /* FloatingNotesApp.swift in Sources */,
 				C27DCBF62EE255B8007F5AD1 /* NoteStore.swift in Sources */,

@@ -6,7 +6,9 @@ class StickyWindowController: NSWindowController {
     private let appearance: NoteAppearance
 
     convenience init(frame: NSRect = NSRect(x: 300, y: 300, width: 300, height: 200)) {
-        let appearance = NoteAppearance(color: .yellow)
+        let colors: [Color] = [.yellow, .orange, .green, .blue]
+        let randomColor = colors.randomElement() ?? .yellow
+        let appearance = NoteAppearance(color: randomColor)
         self.init(frame: frame, appearance: appearance)
     }
 
@@ -40,11 +42,16 @@ class StickyWindowController: NSWindowController {
         panel.isMovableByWindowBackground = true
         panel.isReleasedWhenClosed = false
 
+        // Restore last saved opacity (default to 1.0 if not set)
+        let savedOpacity = UserDefaults.standard.object(forKey: "LastStickyOpacity") as? Double ?? 1.0
+        panel.alphaValue = CGFloat(savedOpacity)
+
         let rootView = StickyNoteView(
             appearance: appearance,
-            initialOpacity: Double(panel.alphaValue)
+            initialOpacity: savedOpacity
         ) { newOpacity in
             panel.alphaValue = CGFloat(newOpacity)
+            UserDefaults.standard.set(newOpacity, forKey: "LastStickyOpacity")
         }
 
         panel.contentView = NSHostingController(rootView: rootView).view

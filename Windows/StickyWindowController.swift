@@ -28,7 +28,7 @@ class StickyWindowController: NSWindowController {
         // --- CRITICAL FOR FULLSCREEN OVERLAY ---
         panel.hidesOnDeactivate = false                 // <-- keep visible when Safari is active
         panel.isFloatingPanel = true
-        panel.level = .statusBar                       // stronger than .floating, still reasonable
+        panel.level = .screenSaver                       // stronger than .floating, still reasonable
         panel.collectionBehavior = [
             .canJoinAllSpaces,
             .fullScreenAuxiliary

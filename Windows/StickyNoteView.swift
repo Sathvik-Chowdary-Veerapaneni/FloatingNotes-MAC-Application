@@ -70,15 +70,14 @@ struct StickyNoteView: View {
                 .padding(.horizontal, 10)
                 .padding(.top, 8)
                 .padding(.bottom, 6)
-                .background(
-                    appearance.color.opacity(0.85)
+                .background(appearance.color.opacity(0.7)
                 )
 
                 // Text area – transparent, sits directly on note color
                 TextEditor(text: $text)
+                    .scrollContentBackground(.hidden)
                     .font(.system(size: 14))
                     .padding(8)
-                    .background(Color.clear)
             }
         }
         .frame(minWidth: 260, minHeight: 160)

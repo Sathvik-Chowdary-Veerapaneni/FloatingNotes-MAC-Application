@@ -9,8 +9,14 @@ class StickyWindowController: NSWindowController {
     var linkedAppBundleID: String? = nil
 
     convenience init(frame: NSRect = NSRect(x: 300, y: 300, width: 300, height: 200)) {
-        let colors: [Color] = [.yellow, .orange, .green, .blue]
-        let randomColor = colors.randomElement() ?? .yellow
+        // Light pastel colors for better visual appeal
+        let colors: [Color] = [
+            Color(red: 1.0, green: 0.98, blue: 0.8),   // Light Yellow
+            Color(red: 1.0, green: 0.92, blue: 0.8),   // Light Orange/Peach
+            Color(red: 0.88, green: 0.98, blue: 0.88), // Light Green/Mint
+            Color(red: 0.88, green: 0.94, blue: 1.0)   // Light Blue/Sky
+        ]
+        let randomColor = colors.randomElement() ?? colors[0]
         let appearance = NoteAppearance(color: randomColor)
         self.init(frame: frame, appearance: appearance)
     }

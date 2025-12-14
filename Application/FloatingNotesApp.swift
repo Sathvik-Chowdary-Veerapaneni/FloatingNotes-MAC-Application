@@ -11,23 +11,23 @@ struct FloatingNotesApp: App {
         }
         .commands {
             CommandMenu("Note Color") {
-                Button("Yellow") {
-                    setActiveNoteColor(.yellow)
+                Button("Light Yellow") {
+                    setActiveNoteColor(Color(red: 1.0, green: 0.98, blue: 0.8))
                 }
                 .keyboardShortcut("1", modifiers: .command)
 
-                Button("Orange") {
-                    setActiveNoteColor(.orange)
+                Button("Light Orange") {
+                    setActiveNoteColor(Color(red: 1.0, green: 0.92, blue: 0.8))
                 }
                 .keyboardShortcut("2", modifiers: .command)
 
-                Button("Green") {
-                    setActiveNoteColor(.green)
+                Button("Light Green") {
+                    setActiveNoteColor(Color(red: 0.88, green: 0.98, blue: 0.88))
                 }
                 .keyboardShortcut("3", modifiers: .command)
 
-                Button("Blue") {
-                    setActiveNoteColor(.blue)
+                Button("Light Blue") {
+                    setActiveNoteColor(Color(red: 0.88, green: 0.94, blue: 1.0))
                 }
                 .keyboardShortcut("4", modifiers: .command)
             }

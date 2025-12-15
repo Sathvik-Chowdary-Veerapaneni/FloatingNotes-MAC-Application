@@ -12,10 +12,22 @@ final class NoteAppearance: ObservableObject {
 
 struct StickyNoteView: View {
 
-    // Text content - Tabs
-    @State private var tabs: [String] = [""]
+    // Text content - Tabs (with names)
+    struct TabItem: Identifiable, Equatable {
+        let id: UUID
+        var name: String
+        var content: String
+        init(id: UUID = UUID(), name: String, content: String = "") {
+            self.id = id
+            self.name = name
+            self.content = content
+        }
+    }
+
+    @State private var tabs: [TabItem] = [TabItem(name: "Tab 1", content: "")]
     @State private var currentTabIndex: Int = 0
     @State private var title: String = ""
+    @State private var isViewReady: Bool = false
 
     // Visual state (shared with controller)
     @ObservedObject var appearance: NoteAppearance

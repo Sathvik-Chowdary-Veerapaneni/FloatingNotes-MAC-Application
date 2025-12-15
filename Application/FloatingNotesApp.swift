@@ -10,6 +10,24 @@ struct FloatingNotesApp: App {
             EmptyView()
         }
         .commands {
+            // File menu with Save command
+            CommandGroup(after: .newItem) {
+                Button("Save Note...") {
+                    saveActiveNote()
+                }
+                .keyboardShortcut("s", modifiers: .command)
+            }
+            
+            // Window actions
+            CommandGroup(after: .windowArrangement) {
+                Button("Minimize") {
+                    if let win = NSApp.keyWindow {
+                        win.miniaturize(nil)
+                    }
+                }
+                .keyboardShortcut("m", modifiers: .command)
+            }
+            
             CommandMenu("Note Color") {
                 Button("Light Yellow") {
                     setActiveNoteColor(Color(red: 1.0, green: 0.98, blue: 0.8))
@@ -33,6 +51,22 @@ struct FloatingNotesApp: App {
             }
         }
     }
+}
+
+// Helper: save the currently active sticky window
+private func saveActiveNote() {
+    print("⌘S: Save requested")
+
+    guard
+        let appDelegate = NSApp.delegate as? AppDelegate,
+        let controller = appDelegate.activeStickyController
+    else {
+        print("⌘S: no active sticky controller")
+        return
+    }
+
+    print("⌘S: found StickyWindowController via delegate, calling saveNote()")
+    controller.saveNote()
 }
 
 // Helper: change color of the currently active sticky window

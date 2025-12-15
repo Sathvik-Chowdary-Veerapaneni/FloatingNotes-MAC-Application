@@ -5,6 +5,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var windowControllers: [StickyWindowController] = []
     private var hotKeyManager: HotKeyManager?
 
+    // Track the sticky that was most recently key for Cmd+S
+    weak var activeStickyController: StickyWindowController?
+
     // Track the previously active app to allow linking notes to it
     var lastActiveAppBundleID: String?
 
@@ -57,6 +60,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         let controller = StickyWindowController(frame: baseFrame)
+        controller.delegate = self
         controller.showWindow(nil)
         windowControllers.append(controller)
         
@@ -64,5 +68,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let currentApp = NSWorkspace.shared.frontmostApplication?.bundleIdentifier {
              controller.checkVisibility(activeAppID: currentApp)
         }
+    }
+}
+
+extension AppDelegate: StickyWindowControllerDelegate {
+    func stickyWindowDidBecomeActive(_ controller: StickyWindowController) {
+        activeStickyController = controller
+    }
+
+    func stickyWindowDidResignActive(_ controller: StickyWindowController) {
+        if activeStickyController === controller {
+            activeStickyController = nil
+        }
+    }
+
+    func stickyWindowDidClose(_ controller: StickyWindowController) {
+        if activeStickyController === controller {
+            activeStickyController = nil
+        }
+
+        windowControllers.removeAll { $0 === controller }
     }
 }

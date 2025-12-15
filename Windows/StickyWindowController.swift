@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 protocol StickyWindowControllerDelegate: AnyObject {
     func stickyWindowDidBecomeActive(_ controller: StickyWindowController)
     func stickyWindowDidResignActive(_ controller: StickyWindowController)
+    func stickyWindowDidClose(_ controller: StickyWindowController)
 }
 
 class StickyWindowController: NSWindowController {
@@ -212,15 +213,18 @@ class StickyWindowController: NSWindowController {
     
     func checkVisibility(activeAppID: String?) {
         guard let linkedID = linkedAppBundleID else {
-            // Not linked, always visible (unless we want to hide when an exclusive app is active? No, global notes act as overlays)
-            // Ensure window is visible (might have been hidden)
-            // But be careful not to steal focus if not needed.
+            // Not linked — show only when FloatingNotes itself is active (e.g. user clicks dock icon)
+            guard activeAppID == Bundle.main.bundleIdentifier else { return }
+
+            if window?.isMiniaturized == true {
+                window?.deminiaturize(nil)
+            }
             if window?.isVisible == false {
                 window?.orderFront(nil)
             }
             return
         }
-        
+
         if activeAppID == linkedID || activeAppID == Bundle.main.bundleIdentifier {
             // Show if active app is the linked one OR if we are interacting with FloatingNotes itself
             if window?.isVisible == false {
@@ -243,5 +247,9 @@ extension StickyWindowController: NSWindowDelegate {
 
     func windowDidResignKey(_ notification: Notification) {
         delegate?.stickyWindowDidResignActive(self)
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        delegate?.stickyWindowDidClose(self)
     }
 }

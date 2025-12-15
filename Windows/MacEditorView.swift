@@ -92,34 +92,53 @@ class AutoBulletTextView: NSTextView {
         let lineRange = stringStr.lineRange(for: NSRange(location: selectedRange.location, length: 0))
         let currentLine = stringStr.substring(with: lineRange).trimmingCharacters(in: .newlines)
         
-        // 1. Check for Numbered List "1. "
-        // Regex: starts with digits, then dot, then space
-        if let regex = try? NSRegularExpression(pattern: "^(\\d+)\\. (.*)") {
-            if let match = regex.firstMatch(in: currentLine, options: [], range: NSRange(location: 0, length: currentLine.utf16.count)) {
-                
-                // Group 1: The number
-                // Group 2: The content
-                let numberRange = match.range(at: 1)
-                let contentRange = match.range(at: 2)
-                
-                let currentNumberString = (currentLine as NSString).substring(with: numberRange)
-                let content = (currentLine as NSString).substring(with: contentRange)
-                
+        // 1. Check for Numbered List
+        // Support styles: "1. text", "1) text", and "1 text" (number + space)
+        do {
+            let ns = currentLine as NSString
+            let fullRange = NSRange(location: 0, length: currentLine.utf16.count)
+            // (a) n. text  OR  n . text (spaces allowed around dot)
+            if let dotRegex = try? NSRegularExpression(pattern: "^(\\d+)\\s*\\.\\s*(.*)"),
+               let m = dotRegex.firstMatch(in: currentLine, options: [], range: fullRange) {
+                let numStr = ns.substring(with: m.range(at: 1))
+                let content = ns.substring(with: m.range(at: 2))
                 if content.trimmingCharacters(in: .whitespaces).isEmpty {
-                    // Empty bullet line -> Case: User hit enter on an empty "2. " -> Remove the bullet
-                    // Replace the whole line (including the bullet) with empty string (or just newline handled by super if we return false... wait)
-                    // We want to delete the current "2. " line and just put a newline?
-                    // Usually: remove the "2. " and act as normal newline.
-                    
-                    // Let's just remove the bullet prefix from the current line
                     replaceCurrentLine(with: "")
-                    return true // Handled
+                    return true
                 }
-                
-                if let number = Int(currentNumberString) {
-                    let nextNumber = number + 1
-                    let nextBullet = "\n\(nextNumber). "
-                    insertText(nextBullet, replacementRange: selectedRange)
+                if let number = Int(numStr) {
+                    let next = number + 1
+                    insertText("\n\(next). ", replacementRange: selectedRange)
+                    return true
+                }
+            }
+            // (b) n) text  OR  n ) text (spaces allowed before/after paren)
+            if let parenRegex = try? NSRegularExpression(pattern: "^(\\d+)\\s*\\)\\s*(.*)"),
+               let m = parenRegex.firstMatch(in: currentLine, options: [], range: fullRange) {
+                let numStr = ns.substring(with: m.range(at: 1))
+                let content = ns.substring(with: m.range(at: 2))
+                if content.trimmingCharacters(in: .whitespaces).isEmpty {
+                    replaceCurrentLine(with: "")
+                    return true
+                }
+                if let number = Int(numStr) {
+                    let next = number + 1
+                    insertText("\n\(next)) ", replacementRange: selectedRange)
+                    return true
+                }
+            }
+            // (c) n␠text  (number followed by at least one space)
+            if let spaceRegex = try? NSRegularExpression(pattern: "^(\\d+)\\s+(.*)"),
+               let m = spaceRegex.firstMatch(in: currentLine, options: [], range: fullRange) {
+                let numStr = ns.substring(with: m.range(at: 1))
+                let content = ns.substring(with: m.range(at: 2))
+                if content.trimmingCharacters(in: .whitespaces).isEmpty {
+                    replaceCurrentLine(with: "")
+                    return true
+                }
+                if let number = Int(numStr) {
+                    let next = number + 1
+                    insertText("\n\(next) ", replacementRange: selectedRange)
                     return true
                 }
             }

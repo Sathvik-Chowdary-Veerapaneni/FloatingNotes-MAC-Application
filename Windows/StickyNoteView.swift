@@ -37,21 +37,46 @@ struct StickyNoteView: View {
     let onOpacityChange: (Double) -> Void
     // Callback to toggle app linking
     let onLinkAction: () -> String? // Returns app name if linked, nil if not
+    // Callback to notify controller of content changes
+    let onContentChange: (String, [String]) -> Void // (title, tabs)
 
     @State private var linkedAppName: String? = nil
+    // Rename state
+    @State private var editingTabIndex: Int? = nil
+    @FocusState private var focusedEditingTabIndex: Int?
 
     init(
         appearance: NoteAppearance,
         initialOpacity: Double = 1.0,
         onOpacityChange: @escaping (Double) -> Void = { _ in },
-        onLinkAction: @escaping () -> String? = { nil }
+        onLinkAction: @escaping () -> String? = { nil },
+        onContentChange: @escaping (String, [String]) -> Void = { _, _ in }
     ) {
         self.appearance = appearance
         _opacity = State(initialValue: initialOpacity)
         self.onOpacityChange = onOpacityChange
         self.onLinkAction = onLinkAction
+        self.onContentChange = onContentChange
     }
 
+    // Safe binding for current tab content that prevents out-of-bounds access
+    private var currentTabBinding: Binding<String> {
+        Binding(
+            get: {
+                guard !tabs.isEmpty, currentTabIndex >= 0, currentTabIndex < tabs.count else {
+                    return ""
+                }
+                return tabs[currentTabIndex].content
+            },
+            set: { newValue in
+                guard !tabs.isEmpty, currentTabIndex >= 0, currentTabIndex < tabs.count else {
+                    return
+                }
+                tabs[currentTabIndex].content = newValue
+            }
+        )
+    }
+    
     var body: some View {
         ZStack {
             // FULL-WINDOW background = note color
@@ -114,7 +139,7 @@ struct StickyNoteView: View {
                                 .contentShape(Rectangle())
                             }
                             .buttonStyle(.plain)
-                            .help(linkedAppName != nil ? "Unlink from \(linkedAppName!)" : "Link to Active App")
+                            .help(linkedAppName != nil ? "Unlink from \(linkedAppName ?? "")" : "Link to Active App")
                         }
 
                         Spacer()
@@ -129,27 +154,65 @@ struct StickyNoteView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         ForEach(0..<tabs.count, id: \.self) { index in
-                            Button(action: {
-                                currentTabIndex = index
-                            }) {
-                                Text("Tab \(index + 1)")
-                                    .font(.system(size: 10, weight: .medium))
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(
-                                        currentTabIndex == index
-                                        ? Color.black.opacity(0.2)
-                                        : Color.clear
-                                    )
-                                    .cornerRadius(6)
-                                    .foregroundColor(.black.opacity(0.8))
+                            let isSelected = currentTabIndex == index
+                            let isEditing = editingTabIndex == index
+
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 5)
+                                    .fill(isSelected ? Color.black.opacity(0.2) : Color.clear)
+
+                                HStack(spacing: 4) {
+                                    if isEditing {
+                                        TextField("Tab \(index + 1)", text: Binding(
+                                            get: { tabs[index].name },
+                                            set: { tabs[index].name = String($0.prefix(20)) }
+                                        ))
+                                        .textFieldStyle(.plain)
+                                        .font(.system(size: 12, weight: .medium))
+                                        .foregroundColor(.black.opacity(0.9))
+                                        .frame(width: 70, height: 22)
+                                        .lineLimit(1)
+                                        .focused($focusedEditingTabIndex, equals: index)
+                                        .onSubmit {
+                                            if tabs[index].name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                                tabs[index].name = "Tab \(index + 1)"
+                                            }
+                                            editingTabIndex = nil
+                                        }
+                                        .onChange(of: focusedEditingTabIndex) { _, newValue in
+                                            if newValue != index, editingTabIndex == index { editingTabIndex = nil }
+                                        }
+                                    } else {
+                                        Text(tabs[index].name)
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(.black.opacity(0.8))
+                                            .lineLimit(1)
+                                            .truncationMode(.tail)
+                                    }
+                                }
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 3)
+                                .frame(height: 22) 
                             }
-                            .buttonStyle(.plain)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 6)
+                                    .stroke(Color.black.opacity(0.18), lineWidth: 0.6)
+                            )
+                            .fixedSize(horizontal: true, vertical: false)
+                            .contentShape(Rectangle())
+                            .onTapGesture(count: 1) { currentTabIndex = index }
+                            .simultaneousGesture(TapGesture(count: 2).onEnded {
+                                currentTabIndex = index
+                                editingTabIndex = index
+                                focusedEditingTabIndex = index
+                            })
+                            .help("Double-click to rename")
                         }
                         
                         // Add Tab Button
                         Button(action: {
-                            tabs.append("")
+                            let newIndex = tabs.count + 1
+                            tabs.append(TabItem(name: "Tab \(newIndex)", content: ""))
                             currentTabIndex = tabs.count - 1
                         }) {
                             Image(systemName: "plus")
@@ -161,16 +224,42 @@ struct StickyNoteView: View {
                         }
                         .buttonStyle(.plain)
                     }
-                    .padding(.horizontal, 10)
+                    .padding(.horizontal, 8)
                     .padding(.vertical, 4)
+                    .frame(height: 22)
                 }
                 .background(appearance.color.opacity(0.5))
 
                 // Text area – transparent, sits directly on note color
-                MacEditorView(text: $tabs[currentTabIndex], isTransparent: true)
+                MacEditorView(text: currentTabBinding, isTransparent: true)
                     .padding(4) // Minimal padding as NSTextView container handles some
             }
         }
         .frame(minWidth: 260, minHeight: 160)
+        .onAppear {
+            // Ensure currentTabIndex is valid on first appearance
+            if currentTabIndex >= tabs.count {
+                currentTabIndex = max(0, tabs.count - 1)
+            }
+            isViewReady = true
+        }
+        .onChange(of: title) { oldValue, newValue in
+            onContentChange(newValue, tabs.map { $0.content })
+        }
+        .onChange(of: tabs) { oldValue, newValue in
+            // Ensure currentTabIndex stays valid when tabs change
+            if currentTabIndex >= newValue.count {
+                currentTabIndex = max(0, newValue.count - 1)
+            }
+            onContentChange(title, newValue.map { $0.content })
+        }
+    }
+}
+
+struct StickyNoteView_Previews: PreviewProvider {
+    static var previews: some View {
+        StickyNoteView(
+            appearance: NoteAppearance(color: .yellow)
+        )
     }
 }
